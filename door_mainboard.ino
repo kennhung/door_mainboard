@@ -68,7 +68,7 @@ void readMaster(){
   if (SD.exists(masdir)) {
     Serial.println("Master card exists.");
     Serial.print(F("Master Card's UID: "));      // Since we have it print to serial
-    File masterfile = SD.open(masdir);  // Open file
+    masterfile = SD.open(masdir);  // Open file
     for (int i = 0; i < 4; i++) {             // Loop 4 times to get 4 bytes
       readCard[i] = masterfile.read();
       Serial.print(readCard[i], HEX);         // Actual serial printing of each byte
@@ -88,11 +88,9 @@ void readMaster(){
     masterfile = SD.open(masdir,FILE_WRITE);
     if(masterfile){
       Serial.println("Writing to master.txt...");
-      while(!successRead);
       masterfile.write(readCard, 4); 
       for (int i = 0; i < 4; i++) {             // Loop 4 times to get 4 bytes
         readCard[i] = masterfile.read();
-
         masterCard[i] = readCard[i];            // Prepare bytes for future comparing
       }
       // close the file:
