@@ -1,4 +1,3 @@
-
 #include <SPI.h>        // RC522 Module uses SPI protocol
 #include <SD.h>         // We are going to read and write PICC's UIDs from/to SD
 #include <LiquidCrystal_I2C.h>
