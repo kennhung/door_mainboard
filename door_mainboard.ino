@@ -70,7 +70,7 @@ void readMaster(){
     masterfile = SD.open(masdir);  // Open file
     for (int i = 0; i < 4; i++) {             // Loop 4 times to get 4 bytes
       readCard[i] = masterfile.read();
-      Serial.print(readCard[i], HEX);         // Actual serial printing of each byte
+      Serial.print(readCard[i],HEX);         // Actual serial printing of each byte
       masterCard[i] = readCard[i];            // Prepare bytes for future comparing
     }
     Serial.println("");
