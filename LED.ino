@@ -94,3 +94,41 @@ void greenBlink() {
   delay(200);
 }
 
+///////////////////////////////////////// Write Failed to EEPROM   ///////////////////////////////////
+// Flashes the red LED 3 times to indicate a failed write to EEPROM
+void failedWrite() {
+  digitalWrite(blueLed, LED_OFF);   // Make sure blue LED is off
+  digitalWrite(redLed, LED_OFF);  // Make sure red LED is off
+  digitalWrite(greenLed, LED_OFF);  // Make sure green LED is off
+  delay(200);
+  digitalWrite(redLed, LED_ON);   // Make sure red LED is on
+  delay(200);
+  digitalWrite(redLed, LED_OFF);  // Make sure red LED is off
+  delay(200);
+  digitalWrite(redLed, LED_ON);   // Make sure red LED is on
+  delay(200);
+  digitalWrite(redLed, LED_OFF);  // Make sure red LED is off
+  delay(200);
+  digitalWrite(redLed, LED_ON);   // Make sure red LED is on
+  delay(200);
+}
+
+///////////////////////////////////////// Write Success to EEPROM   ///////////////////////////////////
+// Flashes the green LED 3 times to indicate a successful write to EEPROM
+void successWrite() {
+  digitalWrite(blueLed, LED_OFF);   // Make sure blue LED is off
+  digitalWrite(redLed, LED_OFF);  // Make sure red LED is off
+  digitalWrite(greenLed, LED_OFF);  // Make sure green LED is on
+  delay(200);
+  digitalWrite(greenLed, LED_ON);   // Make sure green LED is on
+  delay(200);
+  digitalWrite(greenLed, LED_OFF);  // Make sure green LED is off
+  delay(200);
+  digitalWrite(greenLed, LED_ON);   // Make sure green LED is on
+  delay(200);
+  digitalWrite(greenLed, LED_OFF);  // Make sure green LED is off
+  delay(200);
+  digitalWrite(greenLed, LED_ON);   // Make sure green LED is on
+  delay(200);
+}
+
