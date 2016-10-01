@@ -4,6 +4,8 @@
 #include <Wire.h>
 #include <EEPROM.h>     // We are going to read and write PICC's UIDs from/to EEPROM
 
+const int blueLed = 27;
+
 File myFile;
 byte readCard[4];    // Stores scanned ID read from RFID Module
 byte masterCard[4];   // Stores master card's ID
@@ -38,6 +40,16 @@ void setup() {
 }
 
 void loop() {
+    do {
+    // sets successRead to 1 when we get read from reader otherwise 0
+    if (programMode) {
+      cycleLeds();              // Program Mode cycles through RGB waiting to read a new card
+    }
+    else {
+      normalModeOn();     // Normal mode, blue Power LED is on, all others are off
+    }
+  }
+  while (!successRead);   //the program will not go further while you not get a successful read
   int stat = checkID();
   if(stat==1){
     lcd.print("Access Denied");
@@ -45,33 +57,32 @@ void loop() {
   }
   else if(stat==0){
     lcd.print("Access Accept");
-    greenSolid();
+    granted(100);
   }
 
   if(successRead){
-    Serial.println("read");
+    Serial.println("reset");
+    lcd.clear();
+    lcd.setCursor(0, 0);
     successRead=0;
   }
-  else{
-    for(int i =0; i<4;i++){
-      readCard[i] = 0;
-    }
-    blueSolid();
-  }
   
 }
 
-void readMaster(){
-  
-}
 
 void readUIDCard(){
-     Serial.println(F("Scanned PICC's UID: "));
-     for (int i = 0; i < 4; i++) {  //
-       Serial.print(readCard[i],HEX);
-     }
-     Serial.println();
-  }
+   Serial.println(F("Scanned PICC's UID: "));
+   for (int i = 0; i < 4; i++) {  //
+     Serial.print(readCard[i],HEX);
+   }
+   Serial.println();
+}
+
+int checkID(){
+  return 1;
+}
+
+/////////////////////////////////// Recive from I2C ///////////////////////////////////
 
 void receiveEvent(int howMany){
   int i = 0;
@@ -82,57 +93,6 @@ void receiveEvent(int howMany){
   }
   successRead = 1;
   readUIDCard();
-}
-
-int checkID(){
-  if(successRead){
-    
-  }
-  else{
-    return 2;
-  }
-}
-
-///////////////////////////////////////// Card IO /////////////////////////////////////////
-void writeID( byte a[] ) {
-  if ( !findID( a ) ) {     // Before we write to the EEPROM, check to see if we have seen this card before!
-    int num = EEPROM.read(0);     // Get the numer of used spaces, position 0 stores the number of ID cards
-    int start = ( num * 4 ) + 6;  // Figure out where the next slot starts
-    num++;                // Increment the counter by one
-    EEPROM.write( 0, num );     // Write the new count to the counter
-    for ( int j = 0; j < 4; j++ ) {   // Loop 4 times
-      EEPROM.write( start + j, a[j] );  // Write the array values to EEPROM in the right position
-    }
-    successWrite();
-  Serial.println(F("Succesfully added ID record to EEPROM"));
-  }
-  else {
-    failedWrite();
-  Serial.println(F("Failed! There is something wrong with ID or bad EEPROM"));
-  }
-}
-
-//////////////////////////////////////// Read an ID from EEPROM //////////////////////////////
-void readID( int number ) {
-  int start = (number * 4 ) + 2;     // Figure out starting position
-  for ( int i = 0; i < 4; i++ ) {     // Loop 4 times to get the 4 Bytes
-    storedCard[i] = EEPROM.read(start + i);   // Assign values read from EEPROM to array
-  }
-}
-
-///////////////////////////////////////// Find ID From EEPROM   ///////////////////////////////////
-boolean findID( byte find[] ) {
-  int count = EEPROM.read(0);      // Read the first Byte of EEPROM that
-  for ( int i = 1; i <= count; i++ ) {    // Loop once for each EEPROM entry
-    readID(i);          // Read an ID from EEPROM, it is stored in storedCard[4]
-    if ( checkTwo( find, storedCard ) ) {   // Check to see if the storedCard read from EEPROM
-      return true;
-      break;  // Stop looking we found it
-    }
-    else {    // If not, return false
-    }
-  }
-  return false;
 }
 
 ///////////////////////////////////////// Check Bytes   ///////////////////////////////////

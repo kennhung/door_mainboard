@@ -1,6 +1,7 @@
 const int redLed = 26;
 const int greenLed = 30;
 const int blueLed = 27;
+const int relay = 21;
 
 //#define COMMON_ANODE
 
@@ -28,12 +29,15 @@ void blueSolid () {
   digitalWrite(greenLed, LED_OFF);  // Make sure Green LED is off
 }
 
-void greenSolid () {
+/////////////////////////////////////////  Access Granted    ///////////////////////////////////
+void granted (int setDelay) {
   digitalWrite(blueLed, LED_OFF);   // Turn off blue LED
   digitalWrite(redLed, LED_OFF);  // Turn off red LED
   digitalWrite(greenLed, LED_ON);   // Turn on green LED
-  delay(2000);
-  
+  digitalWrite(relay, LOW);     // Unlock door!
+  delay(setDelay);          // Hold door lock open for given seconds
+  digitalWrite(relay, HIGH);    // Relock door
+  delay(1000);            // Hold green LED on for a second
 }
 
 void redSolid () {
@@ -132,3 +136,25 @@ void successWrite() {
   delay(200);
 }
 
+void cycleLeds() {
+  digitalWrite(redLed, LED_OFF);   // Make sure red LED is off
+  digitalWrite(greenLed, LED_ON);   // Make sure green LED is on
+  digitalWrite(blueLed, LED_OFF);   // Make sure blue LED is off
+  delay(200);
+  digitalWrite(redLed, LED_OFF);  // Make sure red LED is off
+  digitalWrite(greenLed, LED_OFF);  // Make sure green LED is off
+  digitalWrite(blueLed, LED_ON);  // Make sure blue LED is on
+  delay(200);
+  digitalWrite(redLed, LED_ON);   // Make sure red LED is on
+  digitalWrite(greenLed, LED_OFF);  // Make sure green LED is off
+  digitalWrite(blueLed, LED_OFF);   // Make sure blue LED is off
+  delay(200);
+}
+
+//////////////////////////////////////// Normal Mode Led  ///////////////////////////////////
+void normalModeOn () {
+  digitalWrite(blueLed, LED_ON);   // Blue LED ON and ready to read card
+  digitalWrite(redLed, LED_OFF);  // Make sure Red LED is off
+  digitalWrite(greenLed, LED_OFF);  // Make sure Green LED is off
+  digitalWrite(relay, HIGH);    // Make sure Door is Locked
+}
