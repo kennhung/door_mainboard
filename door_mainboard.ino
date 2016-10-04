@@ -4,39 +4,20 @@
 #include <Wire.h>
 #include <EEPROM.h>     // We are going to read and write PICC's UIDs from/to EEPROM
 
-const int blueLed = 27;
-
-File myFile;
 byte readCard[4];    // Stores scanned ID read from RFID Module
 byte masterCard[4];   // Stores master card's ID
 byte storedCard[4];
-char dir[] = "PICCS/";
-char masdir[] = "master.txt";
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // 設定 LCD I2C 位址
 
-File masterfile;
 boolean match = false;          // initialize card match to false
 boolean programMode = false;  // initialize programming mode to false
 int successRead;
 void setup() {
   Serial.begin(9600);
   successRead = 0;
-  lcd.begin(16, 2);
-  // 閃爍三次
-  for(int i = 0; i < 3; i++) {
-    lcd.backlight(); // 開啟背光
-    delay(250);
-    lcd.noBacklight(); // 關閉背光
-    delay(250);
-  }
   ledsetup();
   Wire.begin(8);
   Wire.onReceive(receiveEvent);
-  lcd.backlight();
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Setup Complete");
-  readMaster();
 }
 
 void loop() {
@@ -117,4 +98,3 @@ boolean isMaster( byte test[] ) {
   else
     return false;
 }
-

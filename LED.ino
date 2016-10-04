@@ -1,7 +1,9 @@
-const int redLed = 26;
-const int greenLed = 30;
-const int blueLed = 27;
-const int relay = 21;
+#define redLed 26    // Set Led Pins
+#define greenLed 30
+#define blueLed 27
+
+#define relay 32     // Set Relay Pin
+#define wipeB 34     // Button pin for WipeMode
 
 //#define COMMON_ANODE
 
