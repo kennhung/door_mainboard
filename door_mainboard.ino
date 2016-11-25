@@ -31,14 +31,22 @@ void loop() {
     }
   }
   while (!successRead);   //the program will not go further while you not get a successful read
-  int stat = checkID();
+  int stat = 1;
+  if ( findID(readCard) ) {  // If not, see if the card is in the EEPROM
+    Serial.println(F("Welcome, You shall pass"));
+    stat=0;
+  }
+  else {      // If not, show that the ID was not valid
+    Serial.println(F("You shall not pass"));
+    stat = 1;
+  }
   if(stat==1){
     lcd.print("Access Denied");
     redSolid();
   }
   else if(stat==0){
     lcd.print("Access Accept");
-    granted(100);
+    granted(3000);// Open the door lock for 300 ms
   }
 
   if(successRead){
@@ -97,4 +105,59 @@ boolean isMaster( byte test[] ) {
     return true;
   else
     return false;
+}
+
+///////////////////////////////////////// Find ID From EEPROM   ///////////////////////////////////
+boolean findID( byte find[] ) {
+  int count = EEPROM.read(0);      // Read the first Byte of EEPROM that
+  for ( int i = 1; i <= count; i++ ) {    // Loop once for each EEPROM entry
+    readID(i);          // Read an ID from EEPROM, it is stored in storedCard[4]
+    if ( checkTwo( find, storedCard ) ) {   // Check to see if the storedCard read from EEPROM
+      return true;
+      break;  // Stop looking we found it
+    }
+    else {    // If not, return false
+    }
+  }
+  return false;
+}
+
+//////////////////////////////////////// Read an ID from EEPROM //////////////////////////////
+void readID( int number ) {
+  int start = (number * 4 ) + 2;     // Figure out starting position
+  for ( int i = 0; i < 4; i++ ) {     // Loop 4 times to get the 4 Bytes
+    storedCard[i] = EEPROM.read(start + i);   // Assign values read from EEPROM to array
+  }
+}
+
+///////////////////////////////////////// Find Slot   ///////////////////////////////////
+int findIDSLOT( byte find[] ) {
+  int count = EEPROM.read(0);       // Read the first Byte of EEPROM that
+  for ( int i = 1; i <= count; i++ ) {    // Loop once for each EEPROM entry
+    readID(i);                // Read an ID from EEPROM, it is stored in storedCard[4]
+    if ( checkTwo( find, storedCard ) ) {   // Check to see if the storedCard read from EEPROM
+      // is the same as the find[] ID card passed
+      return i;         // The slot number of the card
+      break;          // Stop looking we found it
+    }
+  }
+}
+
+///////////////////////////////////////// Add ID to EEPROM   ///////////////////////////////////
+void writeID( byte a[] ) {
+  if ( !findID( a ) ) {     // Before we write to the EEPROM, check to see if we have seen this card before!
+    int num = EEPROM.read(0);     // Get the numer of used spaces, position 0 stores the number of ID cards
+    int start = ( num * 4 ) + 6;  // Figure out where the next slot starts
+    num++;                // Increment the counter by one
+    EEPROM.write( 0, num );     // Write the new count to the counter
+    for ( int j = 0; j < 4; j++ ) {   // Loop 4 times
+      EEPROM.write( start + j, a[j] );  // Write the array values to EEPROM in the right position
+    }
+    successWrite();
+  Serial.println(F("Succesfully added ID record to EEPROM"));
+  }
+  else {
+    failedWrite();
+  Serial.println(F("Failed! There is something wrong with ID or bad EEPROM"));
+  }
 }
